@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KBC Game - Main Screen</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>KBC Game</h1>
+    <p class="instructions">Scan the QR to play the game:</p>
+    <img id="qrcode" alt="QR Code for joining the game" class="qr-code">
+    <h3 id="result"></h3>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+
+    // Load QR code and display it
+    fetch('/qrcode')
+      .then(response => response.json())
+      .then(data => {
+        document.getElementById('qrcode').src = data.qrCode;
+      });
+
+    // Listen for new questions
+    socket.on('newQuestion', (question) => {
+      document.getElementById('question').innerText = question.text;
+    });
+
+    // End game when no more questions
+    socket.on('gameOver', (data) => {
+      document.getElementById('question').innerText = data.message;
+    });
+  </script>
+</body>
+</html>
